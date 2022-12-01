@@ -1,9 +1,8 @@
 package utils
 
 import (
-	"bufio"
+	"io/ioutil"
 	"log"
-	"os"
 	"runtime"
 	"strings"
 )
@@ -19,17 +18,11 @@ func Read() []string {
 	lastDot := strings.LastIndexByte(funcName[lastSlash:], '.') + lastSlash
 
 
-  file, err := os.Open(funcName[lastDot-2:lastDot] + "/input")
-  if err != nil { log.Fatal(err) }
-  defer file.Close()
-
-  lines := make([]string, 0)
-
-  scanner := bufio.NewScanner(file)
-  for scanner.Scan() {
-    lines = append(lines, scanner.Text())
+  contents, err := ioutil.ReadFile(funcName[lastDot-2:lastDot] + "/input")
+  if err != nil {
+    log.Fatal(err)
+    return nil
   }
-  if err := scanner.Err(); err != nil { log.Fatal(err) }
 
-  return lines
+  return strings.Split(string(contents), "\n")
 }
