@@ -24,5 +24,7 @@ func Read() []string {
     return nil
   }
 
-  return strings.Split(string(contents), "\n")
+  result := strings.Split(string(contents), "\n")
+
+  return result[:len(result)-1]
 }
