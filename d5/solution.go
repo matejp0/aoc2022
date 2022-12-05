@@ -8,32 +8,25 @@ import (
 	"github.com/matejp0/aoc2022/utils"
 )
 
+var input, instructions = parse(utils.Read())
 
 func Part1() string {
   var str string
-
-  input, instructions := parse(utils.Read())
+  
+  stacks := make([][]byte, len(input))
+  copy(stacks, input)
 
   for _, line := range instructions {
-    arr := strings.Fields(line)
-
-    count, err := strconv.Atoi(arr[1])
-    if err != nil { log.Fatal(err) }
-    
-    from, err := strconv.Atoi(arr[3])
-    if err != nil { log.Fatal(err) }
-
-    to, err := strconv.Atoi(arr[5])
-    if err != nil { log.Fatal(err) }
+    count, from, to := parseInstruction(line)
 
     for i := 0; i < count; i++ {
-      input[to-1] = append(input[to-1], input[from-1][len(input[from-1])-1])
-      input[from-1] = input[from-1][:len(input[from-1])-1]
+      stacks[to-1] = append(stacks[to-1], stacks[from-1][len(stacks[from-1])-1])
+      stacks[from-1] = stacks[from-1][:len(stacks[from-1])-1]
     }
 
   }
 
-  for _, stack := range input {
+  for _, stack := range stacks {
     if stack != nil {
       str += string(stack[len(stack)-1])
     }
@@ -45,9 +38,27 @@ func Part1() string {
 func Part2() string {
   var str string
 
-  input, instructions := parse(utils.Read())
+  stacks := make([][]byte, len(input))
+  copy(stacks, input)
 
   for _, line := range instructions {
+    count, from, to := parseInstruction(line)
+
+    stacks[to-1] = append(stacks[to-1], stacks[from-1][(len(stacks[from-1])-count):(len(stacks[from-1]))]...)
+    stacks[from-1] = stacks[from-1][:len(stacks[from-1])-count]
+
+  }
+
+  for _, stack := range stacks {
+    if stack != nil {
+      str += string(stack[len(stack)-1])
+    }
+  }
+
+  return str
+}
+
+func parseInstruction(line string) (int, int, int) {
     arr := strings.Fields(line)
 
     count, err := strconv.Atoi(arr[1])
@@ -59,18 +70,7 @@ func Part2() string {
     to, err := strconv.Atoi(arr[5])
     if err != nil { log.Fatal(err) }
 
-    input[to-1] = append(input[to-1], input[from-1][(len(input[from-1])-count):(len(input[from-1]))]...)
-    input[from-1] = input[from-1][:len(input[from-1])-count]
-
-  }
-
-  for _, stack := range input {
-    if stack != nil {
-      str += string(stack[len(stack)-1])
-    }
-  }
-
-  return str
+    return count, from, to
 }
 
 func parse(input []string) ([][]byte, []string) {
