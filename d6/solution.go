@@ -16,16 +16,16 @@ func Part2() int {
 }
 
 func exclusiveIndex(line string, count int) int {
-  mapa := make(map[byte]uint)
+  buffer := make(map[byte]uint)
 
   nextchar:
   for i := range line {
-    mapa[line[i]]++
+    buffer[line[i]]++
 
     if i >= count {
-      mapa[line[i-count]]--
+      buffer[line[i-count]]--
 
-      for _, count := range mapa {
+      for _, count := range buffer {
         if count > 1 {
           continue nextchar
         }
